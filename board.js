@@ -127,55 +127,61 @@
     h += "</div>";
     return h + '<div class="hint">Fais glisser le plateau pour le tourner</div>';
   }
-  /* fond : cerveau en lignes lumineuses (hémisphère construit par le calcul, puis symétrique) */
-  function hemiPath(k, amp, freq, ph, a0, a1) {
-    var pts = [], n = 64, i, t, th, r, x, y;
-    for (i = 0; i <= n; i++) {
-      t = a0 + (a1 - a0) * i / n;
-      th = (t - 0.5) * Math.PI;
-      r = k * (1 + amp * Math.sin(freq * th + ph));
-      x = 98 - 80 * r * Math.cos(th) * (1 - 0.08 * Math.sin(th) * Math.sin(th));
-      y = 100 + 86 * r * Math.sin(th);
-      pts.push(x.toFixed(1) + " " + y.toFixed(1));
-    }
-    return "M" + pts.join(" L");
-  }
-  var BR_OUT = hemiPath(1, 0.035, 11, 0.6, 0.02, 0.98);
-  var BR_FIS = "M99 14 C95 40 103 62 98 88 C94 112 103 134 98 158 C96 172 99 180 99 186";
-  var BR_GYR = [
-    [hemiPath(0.8, 0.07, 13, 0.2, 0.08, 0.92), "1"],
-    [hemiPath(0.58, 0.09, 15, 1.4, 0.14, 0.86), "2"],
-    [hemiPath(0.36, 0.1, 17, 2.1, 0.22, 0.78), "3"],
-    ["M26 112 C38 106 46 114 58 106 C68 100 74 106 84 100", "4"],
-    ["M36 70 C46 62 52 72 62 64 C70 58 78 64 86 58", "5"],
-    ["M44 138 C52 132 60 140 70 134 C78 130 84 134 90 128", "6"]
-  ];
-  var BR_NODES = [[72, 56], [64, 100], [58, 130], [48, 78], [80, 140], [34, 100], [84, 80]];
-  function brainHemi(flip) {
-    var h = '<g' + (flip ? ' transform="translate(198 0) scale(-1 1)"' : "") + ">", i;
-    h += '<path class="bw" d="' + BR_OUT + '"/><path class="bl" d="' + BR_OUT + '"/>';
-    for (i = 0; i < BR_GYR.length; i++) { h += '<path class="gw" d="' + BR_GYR[i][0] + '"/><path class="gl g' + BR_GYR[i][1] + '" d="' + BR_GYR[i][0] + '"/>'; }
-    h += '<path class="fl" pathLength="100" style="animation-delay:' + (flip ? -3 : 0) + 's" d="' + BR_OUT + '"/>';
-    for (i = 0; i < BR_NODES.length; i++) { h += '<circle class="nd" style="animation-delay:' + ((i * 0.45 + (flip ? 0.2 : 0)) % 3).toFixed(2) + 's" cx="' + BR_NODES[i][0] + '" cy="' + BR_NODES[i][1] + '" r="1.8"/>'; }
-    return h + "</g>";
-  }
+  /* fond : image d'un cerveau lumineux (brain.webp, ou window.BRAIN_SRC quand tout est dans une seule page) */
   function brain() {
-    return '<svg class="brain" viewBox="0 0 200 200" aria-hidden="true">' + brainHemi(false) + brainHemi(true) +
-      '<path class="bw" d="' + BR_FIS + '"/><path class="bl" d="' + BR_FIS + '"/></svg>';
+    return '<img class="brain" alt="" draggable="false" src="' + (window.BRAIN_SRC || "brain.webp") + '">';
   }
-  /* pion : un athlète qui court */
-  function athlete(color, ini) {
-    var c = String(color || "#FFBD59");
-    return '<svg class="ath" viewBox="0 0 44 66" aria-hidden="true">' +
-      '<g class="lg l"><path d="M17 42 L15.5 56" class="sk"/><path d="M15.5 56 L15.5 60" class="so"/><ellipse cx="14.6" cy="62" rx="4.4" ry="2.2" class="sh2"/></g>' +
-      '<g class="lg r"><path d="M27 42 L28.5 56" class="sk"/><path d="M28.5 56 L28.5 60" class="so"/><ellipse cx="29.4" cy="62" rx="4.4" ry="2.2" class="sh2"/></g>' +
-      '<g class="bd"><path d="M13 19 Q22 14 31 19 L30 37 Q22 40 14 37 Z" style="fill:' + c + '" stroke="#fff" stroke-width="1"/>' +
-      '<rect x="13.5" y="36" width="17" height="8" rx="2" class="st"/><rect x="13.5" y="38.5" width="17" height="1.4" class="gd"/>' +
-      '<text x="22" y="32" text-anchor="middle" class="nb">' + ini + '</text>' +
+  /* pion : un athlète qui porte le sport du joueur */
+  var STEPMS = 260;
+  var SPORTS = [
+    ["rugby", /rugby|ovale|XV/i], ["foot", /foot|soccer|futsal/i], ["basket", /basket|nba/i], ["hand", /hand/i],
+    ["volley", /volley|beach/i], ["tennis", /tennis|padel|squash|badminton|ping|raquette/i],
+    ["swim", /nata|nage|nageur|water.?polo|plong|aquat/i], ["velo", /v[ée]lo|cyclis|vtt|triathl|bmx/i],
+    ["combat", /judo|karat|taekwon|lutte|jiu|aikido|combat|mma|krav/i], ["boxe", /box|kick|muay|escrim/i],
+    ["golf", /golf/i], ["run", /ath[lé]|cours|run|marathon|sprint|trail|saut|lancer|cross/i]
+  ];
+  function sportKind(s) {
+    var t = String(s || ""), i;
+    for (i = 0; i < SPORTS.length; i++) { if (SPORTS[i][1].test(t)) { return SPORTS[i][0]; } }
+    return "def";
+  }
+  function ballFor(k) {
+    var g = '<g transform="translate(37 60)">';
+    if (k === "rugby") { return g + '<ellipse rx="4.6" ry="3" transform="rotate(-25)" class="bl1"/><path d="M-2 1.4 L2 -1.4 M-.8 .2 L-1.6 -.8 M.4 -.7 L1.2 -1.7" stroke="#0D1B3E" stroke-width=".7" fill="none"/></g>'; }
+    if (k === "foot") { return g + '<circle r="3.6" class="bl1"/><path d="M0 -1.6 L1.5 -.5 L.9 1.3 L-.9 1.3 L-1.5 -.5 Z" fill="#0D1B3E"/></g>'; }
+    if (k === "basket") { return g + '<circle r="3.8" class="bl2"/><path d="M-3.8 0 H3.8 M0 -3.8 V3.8 M-2.6 -2.6 Q0 0 -2.6 2.6 M2.6 -2.6 Q0 0 2.6 2.6" stroke="#5a2a10" stroke-width=".6" fill="none"/></g>'; }
+    if (k === "hand") { return g + '<circle r="3.4" class="bl1"/><path d="M-3.4 0 H3.4 M0 -3.4 V3.4" stroke="#2a62d6" stroke-width="1" fill="none"/></g>'; }
+    if (k === "volley") { return g + '<circle r="3.6" class="bl1"/><path d="M-3.4 -1 Q0 1.6 3.4 -1 M-1.6 -3.2 Q1.4 -.4 -.6 3.6 M2.2 -2.8 Q-.8 .2 1.8 3" stroke="#e8b04b" stroke-width="1" fill="none"/></g>'; }
+    if (k === "tennis") { return g + '<circle r="2.4" fill="#d7ec3c"/><path d="M-2 -1.2 Q0 0 -2 1.2 M2 -1.2 Q0 0 2 1.2" stroke="#fff" stroke-width=".6" fill="none"/></g>'; }
+    if (k === "golf") { return g + '<circle r="1.8" class="bl1"/></g>'; }
+    if (k === "velo") { return g + '<circle r="4.4" fill="none" stroke="#fff" stroke-width="1.2"/><path d="M-4.4 0 H4.4 M0 -4.4 V4.4" stroke="#fff" stroke-width=".5"/></g>'; }
+    if (k === "swim" || k === "run" || k === "combat" || k === "boxe") { return ""; }
+    return g + '<circle r="3.3" class="bl1"/></g>';
+  }
+  function athlete(color, ini, sport) {
+    var c = String(color || "#FFBD59"), k = sportKind(sport), ball = ballFor(k);
+    var hair = '<path d="M15.8 9 Q22 1.2 28.2 9 L28.2 7.6 Q22 -.4 15.8 7.6 Z" class="ha"/><rect x="15.9" y="7.3" width="12.2" height="2.2" rx="1" class="hb"/>';
+    var gear = "", head = "", hand = "";
+    if (k === "swim") { hair = '<path d="M15.6 9.6 Q15.6 1.4 22 1.4 Q28.4 1.4 28.4 9.6 Z" style="fill:' + c + '" stroke="#fff" stroke-width=".7"/>'; head = '<rect x="17" y="9.4" width="10" height="3" rx="1.4" fill="#16294f" stroke="#7fe3e6" stroke-width=".7"/>'; }
+    if (k === "velo") { hair = '<path d="M15.2 9.6 Q15.2 .6 22 .6 Q28.8 .6 28.8 9.6 Z" style="fill:' + c + '" stroke="#fff" stroke-width=".8"/><path d="M17 4 L27 4 M18 6.4 L26 6.4" stroke="#fff" stroke-width=".6"/>'; head = '<rect x="16.5" y="9.2" width="11" height="2.8" rx="1.2" fill="#0D1B3E" opacity=".85"/>'; }
+    if (k === "rugby") { hair = '<path d="M15.8 9.4 Q15.8 1.4 22 1.4 Q28.2 1.4 28.2 9.4 L26.6 9.4 Q22 4.6 17.4 9.4 Z" class="ha"/>'; gear = '<path d="M13.4 24 H30.6 M13.2 29.5 H30.8" stroke="#fff" stroke-width="1.6" opacity=".9"/>'; }
+    if (k === "tennis") { hand = '<g transform="translate(35.4 33.4) rotate(-32)"><path d="M0 0 V-11" stroke="#fff" stroke-width="1.4"/><ellipse cx="0" cy="-17" rx="5" ry="6.4" fill="none" stroke="#fff" stroke-width="1.3"/><path d="M-3.4 -17 H3.4 M0 -22 V-12 M-2.4 -20.6 H2.4 M-2.4 -13.4 H2.4" stroke="#7fe3e6" stroke-width=".4"/></g>'; }
+    if (k === "golf") { hand = '<g transform="translate(35.4 33.4) rotate(18)"><path d="M0 0 V27" stroke="#d9dde8" stroke-width="1.2"/><path d="M0 27 L4.4 28.6 L4 30.2 L-.4 28.6 Z" fill="#d9dde8"/></g>'; }
+    if (k === "boxe") { hand = '<circle cx="8.6" cy="33.4" r="3.6" class="gv"/><circle cx="35.4" cy="33.4" r="3.6" class="gv"/>'; }
+    if (k === "combat") { gear = '<path d="M16 19.4 L22 31 L28 19.4" stroke="#cfd6e6" stroke-width="1" fill="none"/><rect x="13.4" y="34" width="17.2" height="2.6" class="belt" style="fill:' + c + '"/><rect x="21" y="33.6" width="2.4" height="6" class="belt" style="fill:' + c + '"/>'; }
+    if (k === "run") { gear = '<rect x="17.4" y="22" width="9.2" height="6.4" rx="1" fill="#fff" opacity=".95"/><text x="22" y="27.2" text-anchor="middle" font-size="5" font-weight="700" fill="#0D1B3E">' + (/^[0-9]$/.test(ini) ? ini : "7") + '</text>'; }
+    var jersey = (k === "combat") ? "#f3f5fa" : c;
+    var sock = (k === "foot" || k === "rugby" || k === "volley") ? "sc" : "";
+    return '<svg class="ath k-' + k + '" viewBox="0 0 44 66" aria-hidden="true">' +
+      '<g class="lg l"><path d="M17 42 L15.5 56" class="sk"/><path d="M15.5 56 L15.5 60" class="so ' + sock + '" style="--tc:' + c + '"/><ellipse cx="14.6" cy="62" rx="4.4" ry="2.2" class="sh2"/></g>' +
+      '<g class="lg r"><path d="M27 42 L28.5 56" class="sk"/><path d="M28.5 56 L28.5 60" class="so ' + sock + '" style="--tc:' + c + '"/><ellipse cx="29.4" cy="62" rx="4.4" ry="2.2" class="sh2"/></g>' +
+      '<g class="bd"><path d="M13 19 Q22 14 31 19 L30 37 Q22 40 14 37 Z" style="fill:' + jersey + '" stroke="#fff" stroke-width="1"/>' +
+      '<rect x="13.5" y="36" width="17" height="8" rx="2" class="st"/><rect x="13.5" y="38.5" width="17" height="1.4" class="gd"/>' + gear +
+      (k === "run" || k === "combat" ? "" : '<text x="22" y="32" text-anchor="middle" class="nb">' + ini + '</text>') +
       '<g class="ar l"><path d="M13.5 20 L9 32" class="sk"/><circle cx="8.6" cy="33.4" r="2" class="hd"/></g>' +
-      '<g class="ar r"><path d="M30.5 20 L35 32" class="sk"/><circle cx="35.4" cy="33.4" r="2" class="hd"/></g>' +
-      '<circle cx="22" cy="10" r="6.2" class="hd"/><path d="M15.8 9 Q22 1.2 28.2 9 L28.2 7.6 Q22 -.4 15.8 7.6 Z" class="ha"/><rect x="15.9" y="7.3" width="12.2" height="2.2" rx="1" class="hb"/></g>' +
-      '<circle class="ball" cx="37" cy="60" r="3.3"/></svg>';
+      '<g class="ar r"><path d="M30.5 20 L35 32" class="sk"/><circle cx="35.4" cy="33.4" r="2" class="hd"/>' + hand + '</g>' +
+      '<circle cx="22" cy="10" r="6.2" class="hd"/>' + hair + head + '</g>' +
+      (ball ? '<g class="ball">' + ball + '</g>' : "") + '</svg>';
   }
   var SHOWN = {}, ANIM = {};
   var off = 0;
@@ -228,7 +234,7 @@
       place(el, cur);
       var pp = el.querySelector(".pp");
       if (pp) { pp.className = "pp"; void pp.offsetWidth; pp.className = "pp hop"; }
-      setTimeout(hop, 330);
+      setTimeout(hop, STEPMS);
     }
     setTimeout(hop, delay);
   }
@@ -292,6 +298,6 @@
     TRACK: TRACK, PIVOT: PIVOT, DIE: DIE, PH: PH, KINDS: KINDS, MODPH: MODPH,
     kindOf: kindOf, modOf: modOf, phaseOf: phaseOf, clampMove: clampMove,
     xy: xy, html: html, animate: animate, shown: SHOWN, icon: icon,
-    dieHtml: dieHtml, tumble: tumble, athlete: athlete
+    dieHtml: dieHtml, tumble: tumble, athlete: athlete, sportKind: sportKind, STEPMS: STEPMS
   };
 })();

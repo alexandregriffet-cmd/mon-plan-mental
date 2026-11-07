@@ -63,3 +63,6 @@ Le plan s'ouvre sur « Mes 3 actions prioritaires » : les 3 dimensions les plus
 Après la mise en situation, chaque joueur répond à une question ouverte du coach (coach.js, liée à la dimension de la case), reçoit le mot du coach puis choisit son outil. Les réponses apparaissent dans « Mon programme » et dans le texte copié. Aucun changement SQL (le flag est dans `state`).
 
 La fiche de synthèse « Mes 3 actions prioritaires » est aussi présente dans la version club (vue programme et texte copié).
+
+## Plateau
+Le fond est l image brain.webp (cerveau lumineux). Le pion est un athlète dont l équipement dépend du sport saisi (rugby, foot, basket, hand, volley, tennis, natation, vélo, judo, boxe, golf, athlétisme). En club, le sport est demandé à l entrée et partagé via game_public (voir supabase.sql).

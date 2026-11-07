@@ -30,7 +30,7 @@
       var d = load(); var p = plByToken(d, token);
       if (!p) { return P(null); }
       if (p.step === "done" && me.step === "validate") { return P(null); }
-      p.pos = Math.max(0, Math.min(me.pos, 20)); p.score = Math.max(0, me.score);
+      p.pos = Math.max(0, Math.min(me.pos, 50)); p.score = Math.max(0, me.score);
       p.step = me.step; p.last_round = me.last_round; p.state = me.state; store(d);
       return P(null);
     },
@@ -41,7 +41,7 @@
       for (var i = 0; i < d.players.length; i++) {
         var p = d.players[i];
         if (p.game_id !== g.id) { continue; }
-        list.push({ id: p.id, name: p.name, avatar: p.avatar, pos: p.pos, total: p.score + p.bonus, step: p.step });
+        list.push({ id: p.id, name: p.name, avatar: p.avatar, pos: p.pos, total: p.score + p.bonus, step: p.step, sport: (p.state && p.state.sport) || "" });
         if (token && p.token === token) { me = { id: p.id, name: p.name, avatar: p.avatar, pos: p.pos, score: p.score, bonus: p.bonus, step: p.step, last_round: p.last_round, state: p.state }; }
       }
       return P({ game: { id: g.id, code: g.code, title: g.title, status: g.status, round: g.round }, players: list, me: me });

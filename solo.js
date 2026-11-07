@@ -270,7 +270,7 @@ function vEmo() {
   return h;
 }
 function pawn() {
-  return '<div class="sh"></div><div class="pp">' + Board.athlete(COL, esc(String(S.name).charAt(0).toUpperCase() || "?")) + "</div>";
+  return '<div class="sh"></div><div class="pp">' + Board.athlete(COL, esc(String(S.name).charAt(0).toUpperCase() || "?"), S.sport) + "</div>";
 }
 function boardHtml() {
   return Board.html([{ id: "me", name: S.name, pos: S.pos }], "me", function () { return pawn(); }, Board.shown);
@@ -507,7 +507,7 @@ function render() {
       var gb = document.getElementById("goCard");
       if (gb) {
         gb.disabled = true;
-        setTimeout(function () { var x = document.getElementById("goCard"); if (x) { x.disabled = false; } }, 1500 + S.rolled * 340 + 250);
+        setTimeout(function () { var x = document.getElementById("goCard"); if (x) { x.disabled = false; } }, 1500 + S.rolled * Board.STEPMS + 450);
       }
     } else { Board.animate(app); }
   }

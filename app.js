@@ -91,6 +91,7 @@ function vEntry() {
   h += '<label>Code de la partie (4 lettres)</label>';
   h += '<input id="jc" type="text" maxlength="4" placeholder="ABCD" autocapitalize="characters" autocomplete="off" class="codein">';
   h += '<label>Ton prénom</label><input id="jn" type="text" maxlength="20" placeholder="Prénom" autocomplete="off">';
+  h += '<label>Ton sport</label><input id="js" type="text" maxlength="24" placeholder="Rugby, foot, basket, tennis..." autocomplete="off">';
   h += '<label>Ta couleur</label><div class="avs">';
   for (var i = 0; i < AVATARS.length; i++) {
     h += '<span class="av' + (i === AV ? " on" : "") + '" id="av' + i + '" onclick="pickAv(' + i + ')" style="background:' + AVATARS[i] + '"></span>';
@@ -110,11 +111,12 @@ function pickAv(i) {
 function doJoin() {
   var code = document.getElementById("jc").value.trim().toUpperCase();
   var name = document.getElementById("jn").value.trim();
+  var sport = document.getElementById("js").value.trim();
   if (code.length !== 4) { setErr("Le code a 4 lettres."); return; }
   if (!name) { setErr("Entre ton prénom."); return; }
   setErr("");
   api.join(code, name, AVATARS[AV]).then(function (r) {
-    lsSet(KEY, JSON.stringify({ code: r.code, token: r.token }));
+    lsSet(KEY, JSON.stringify({ code: r.code, token: r.token, sport: sport }));
     resume();
   }).catch(function (e) { setErr(e.message); });
 }
@@ -127,6 +129,7 @@ function resume() {
   api.pub(s.code, TOKEN).then(function (d) {
     if (!d || !d.me) { lsDel(KEY); VIEW = "entry"; render(); return; }
     G = d.game; PL = d.players; adoptMe(d.me);
+    if (!ST().sport && s.sport) { ST().sport = s.sport; saveMe(); }
     VIEW = "player"; SUB = "";
     afterPoll(); go();
     startPoll(pPoll, 2000);
@@ -191,7 +194,7 @@ function chips() {
 }
 var SHOWN = Board.shown;
 function pawnHtml(p) {
-  return '<div class="sh"></div><div class="pp"><span class="nm">' + esc(String(p.name).slice(0, 8)) + '</span>' + Board.athlete(colorOf(p), esc(initial(p.name))) + "</div>";
+  return '<div class="sh"></div><div class="pp"><span class="nm">' + esc(String(p.name).slice(0, 8)) + '</span>' + Board.athlete(colorOf(p), esc(initial(p.name)), p.sport || (ME && p.id === ME.id && ST() ? ST().sport : "")) + "</div>";
 }
 function board3d(list, meId) { return Board.html(list, meId, pawnHtml, Board.shown); }
 function boardHtml() { return board3d(plist(), ME ? ME.id : ""); }
@@ -200,8 +203,8 @@ function plist() {
   var list = [];
   for (var i = 0; i < PL.length; i++) {
     var p = PL[i];
-    if (ME && p.id === ME.id) { list.push({ id: p.id, name: ME.name, avatar: ME.avatar, pos: ME.pos, total: total() }); }
-    else { list.push({ id: p.id, name: p.name, avatar: p.avatar, pos: p.pos, total: p.total }); }
+    if (ME && p.id === ME.id) { list.push({ id: p.id, name: ME.name, avatar: ME.avatar, pos: ME.pos, total: total(), sport: ST().sport || "" }); }
+    else { list.push({ id: p.id, name: p.name, avatar: p.avatar, pos: p.pos, total: p.total, sport: p.sport || "" }); }
   }
   return list;
 }

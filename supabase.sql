@@ -81,7 +81,7 @@ end $$;
 
 create or replace function public.game_public(p_code text, p_token uuid default null)
 returns json language plpgsql security definer set search_path = public as $$
-declare g public.games; me json; r json;
+declare g public.games; me json; pl json;
 begin
   select * into g from public.games where code = upper(trim(p_code));
   if not found then return null; end if;
@@ -90,14 +90,14 @@ begin
       select id, name, avatar, pos, score, bonus, step, last_round, state
       from public.players where token = p_token and game_id = g.id) x;
   end if;
-  select json_build_object(
-    'game', json_build_object('id', g.id, 'code', g.code, 'title', g.title, 'status', g.status, 'round', g.round),
-    'players', coalesce((
-      select json_agg(json_build_object('id', id, 'name', name, 'avatar', avatar, 'pos', pos,
-                                        'total', score + bonus, 'step', step) order by joined_at)
-      from public.players where game_id = g.id), '[]'::json),
-    'me', me) into r;
-  return r;
+  select coalesce(json_agg(json_build_object(
+      'id', id, 'name', name, 'avatar', avatar, 'pos', pos,
+      'total', score + bonus, 'step', step, 'sport', state->>'sport') order by joined_at), '[]'::json)
+    into pl from public.players where game_id = g.id;
+  return json_build_object(
+    'game', json_build_object('id', g.id, 'code', g.code, 'title', g.title,
+                              'status', g.status, 'round', g.round),
+    'players', pl, 'me', me);
 end $$;
 
 create or replace function public.coach_validate(p_player uuid, p_ok boolean)
