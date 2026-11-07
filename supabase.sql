@@ -70,7 +70,7 @@ begin
     raise exception 'Etape invalide';
   end if;
   update public.players
-    set pos = greatest(0, least(p_pos, 20)),
+    set pos = greatest(0, least(p_pos, 50)),
         score = greatest(0, least(p_score, 5000)),
         step = p_step,
         last_round = p_last_round,
