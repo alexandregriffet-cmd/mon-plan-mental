@@ -145,43 +145,37 @@
     for (i = 0; i < SPORTS.length; i++) { if (SPORTS[i][1].test(t)) { return SPORTS[i][0]; } }
     return "def";
   }
-  function ballFor(k) {
-    var g = '<g transform="translate(37 60)">';
-    if (k === "rugby") { return g + '<ellipse rx="4.6" ry="3" transform="rotate(-25)" class="bl1"/><path d="M-2 1.4 L2 -1.4 M-.8 .2 L-1.6 -.8 M.4 -.7 L1.2 -1.7" stroke="#0D1B3E" stroke-width=".7" fill="none"/></g>'; }
-    if (k === "foot") { return g + '<circle r="3.6" class="bl1"/><path d="M0 -1.6 L1.5 -.5 L.9 1.3 L-.9 1.3 L-1.5 -.5 Z" fill="#0D1B3E"/></g>'; }
-    if (k === "basket") { return g + '<circle r="3.8" class="bl2"/><path d="M-3.8 0 H3.8 M0 -3.8 V3.8 M-2.6 -2.6 Q0 0 -2.6 2.6 M2.6 -2.6 Q0 0 2.6 2.6" stroke="#5a2a10" stroke-width=".6" fill="none"/></g>'; }
-    if (k === "hand") { return g + '<circle r="3.4" class="bl1"/><path d="M-3.4 0 H3.4 M0 -3.4 V3.4" stroke="#2a62d6" stroke-width="1" fill="none"/></g>'; }
-    if (k === "volley") { return g + '<circle r="3.6" class="bl1"/><path d="M-3.4 -1 Q0 1.6 3.4 -1 M-1.6 -3.2 Q1.4 -.4 -.6 3.6 M2.2 -2.8 Q-.8 .2 1.8 3" stroke="#e8b04b" stroke-width="1" fill="none"/></g>'; }
-    if (k === "tennis") { return g + '<circle r="2.4" fill="#d7ec3c"/><path d="M-2 -1.2 Q0 0 -2 1.2 M2 -1.2 Q0 0 2 1.2" stroke="#fff" stroke-width=".6" fill="none"/></g>'; }
-    if (k === "golf") { return g + '<circle r="1.8" class="bl1"/></g>'; }
-    if (k === "velo") { return g + '<circle r="4.4" fill="none" stroke="#fff" stroke-width="1.2"/><path d="M-4.4 0 H4.4 M0 -4.4 V4.4" stroke="#fff" stroke-width=".5"/></g>'; }
-    if (k === "swim" || k === "run" || k === "combat" || k === "boxe") { return ""; }
-    return g + '<circle r="3.3" class="bl1"/></g>';
+  /* tête du pion : l'objet du sport, dessiné autour de (0,0) */
+  function headFor(k) {
+    var w = '#fff', d = '#0D1B3E';
+    if (k === "rugby") { return '<ellipse rx="11" ry="6.8" transform="rotate(-22)" fill="#a8582a" stroke="' + d + '" stroke-width=".9"/><path transform="rotate(-22)" d="M-6.5 -5.4 Q-7.6 0 -6.5 5.4 M6.5 -5.4 Q7.6 0 6.5 5.4" stroke="' + w + '" stroke-width="1.3" fill="none"/><path transform="rotate(-22)" d="M-3 0 H3 M-2 -1.6 V1.6 M0 -1.6 V1.6 M2 -1.6 V1.6" stroke="' + w + '" stroke-width=".8"/>'; }
+    if (k === "foot") { return '<circle r="9.4" fill="' + w + '" stroke="' + d + '" stroke-width=".9"/><path d="M0 -4.4 L4.2 -1.4 L2.6 3.6 L-2.6 3.6 L-4.2 -1.4 Z" fill="' + d + '"/><path d="M0 -4.4 V-9 M4.2 -1.4 L8.6 -3 M2.6 3.6 L5.4 7.6 M-2.6 3.6 L-5.4 7.6 M-4.2 -1.4 L-8.6 -3" stroke="' + d + '" stroke-width="1"/>'; }
+    if (k === "basket") { return '<circle r="9.4" fill="#ee7a2a" stroke="#5a2a10" stroke-width=".9"/><path d="M-9.4 0 H9.4 M0 -9.4 V9.4 M-6.6 -6.6 Q0 0 -6.6 6.6 M6.6 -6.6 Q0 0 6.6 6.6" stroke="#5a2a10" stroke-width="1" fill="none"/>'; }
+    if (k === "hand") { return '<circle r="9.2" fill="' + w + '" stroke="' + d + '" stroke-width=".9"/><path d="M-9.2 0 H9.2 M0 -9.2 V9.2" stroke="#2a62d6" stroke-width="2.4"/><circle r="9.2" fill="none" stroke="#2a62d6" stroke-width=".8"/>'; }
+    if (k === "volley") { return '<circle r="9.4" fill="' + w + '" stroke="' + d + '" stroke-width=".9"/><path d="M-9 -2.4 Q0 3.6 9 -2.4 M-4 -8.6 Q4 -1 -1.6 9.2 M6.4 -7 Q-2 -.4 5 8" stroke="#e8b04b" stroke-width="2" fill="none"/><path d="M-9 -2.4 Q0 3.6 9 -2.4" stroke="#2a62d6" stroke-width=".8" fill="none"/>'; }
+    if (k === "tennis") { return '<circle r="9" fill="#d7ec3c" stroke="#7f9a12" stroke-width=".9"/><path d="M-7.4 -5 Q-1.6 0 -7.4 5 M7.4 -5 Q1.6 0 7.4 5" stroke="' + w + '" stroke-width="1.5" fill="none"/>'; }
+    if (k === "golf") { return '<circle r="9" fill="' + w + '" stroke="#b9c0d2" stroke-width=".9"/><circle cx="-3" cy="-3" r=".8" fill="#b9c0d2"/><circle cx="1.6" cy="-4.6" r=".8" fill="#b9c0d2"/><circle cx="4.4" cy="-.6" r=".8" fill="#b9c0d2"/><circle cx="-4.6" cy="1.8" r=".8" fill="#b9c0d2"/><circle cx="-.4" cy=".8" r=".8" fill="#b9c0d2"/><circle cx="3" cy="4.4" r=".8" fill="#b9c0d2"/><circle cx="-2" cy="5.6" r=".8" fill="#b9c0d2"/>'; }
+    if (k === "swim") { return '<circle r="9.4" fill="#2a8fd6" stroke="' + w + '" stroke-width=".9"/><path d="M-9.4 -1 H9.4" stroke="' + w + '" stroke-width="1.2"/><rect x="-7.6" y="-.2" width="15.2" height="5.6" rx="2.8" fill="#12294f" stroke="#7fe3e6" stroke-width=".9"/><circle cx="-3.4" cy="2.6" r="1.6" fill="#7fe3e6"/><circle cx="3.4" cy="2.6" r="1.6" fill="#7fe3e6"/><path d="M-6 -6.4 Q0 -9.4 6 -6.4" stroke="' + w + '" stroke-width=".9" fill="none" opacity=".7"/>'; }
+    if (k === "velo") { return '<circle r="8.4" fill="none" stroke="#1c2540" stroke-width="3.4"/><circle r="8.4" fill="none" stroke="' + w + '" stroke-width="1.1"/><path d="M-8 0 H8 M0 -8 V8 M-5.6 -5.6 L5.6 5.6 M5.6 -5.6 L-5.6 5.6" stroke="' + w + '" stroke-width=".7"/><circle r="1.6" fill="#FFBD59"/>'; }
+    if (k === "boxe") { return '<path d="M-7 -2 Q-8.6 -9.6 0 -9.6 Q9 -9.6 8 -1.6 Q7.4 3.6 5.4 5.4 L-5 5.4 Q-7 3 -7 -2 Z" fill="#e2453c" stroke="' + w + '" stroke-width=".9"/><ellipse cx="-6.6" cy="1.2" rx="3.2" ry="4" fill="#c0302a" stroke="' + w + '" stroke-width=".7"/><rect x="-5.6" y="5" width="11" height="4.4" rx="1.4" fill="' + w + '" stroke="' + d + '" stroke-width=".6"/>'; }
+    if (k === "combat") { return '<path d="M-3 4 L-9 9 L-5.6 10 L-1 6 Z M3 4 L9 9 L5.6 10 L1 6 Z" fill="#14141c" stroke="' + w + '" stroke-width=".6"/><rect x="-10" y="-5" width="20" height="8" rx="2.6" fill="#14141c" stroke="' + w + '" stroke-width=".8"/><rect x="-4" y="-6.4" width="8" height="10.4" rx="2" fill="#2a2a38" stroke="' + w + '" stroke-width=".8"/><path d="M-10 -1 H-4 M4 -1 H10" stroke="#FFBD59" stroke-width="1"/>'; }
+    if (k === "run") { return '<rect x="-2" y="-12" width="4" height="3" rx=".8" fill="' + w + '"/><circle r="9" fill="' + w + '" stroke="' + d + '" stroke-width=".9"/><circle r="7" fill="' + d + '"/><path d="M0 0 V-5 M0 0 L3.6 2.2" stroke="#FFBD59" stroke-width="1.3" stroke-linecap="round"/><circle r="1" fill="' + w + '"/><path d="M0 -6.2 V-5.2 M6.2 0 H5.2 M0 6.2 V5.2 M-6.2 0 H-5.2" stroke="' + w + '" stroke-width=".7"/>'; }
+    return '<circle r="9.4" fill="#FFBD59" stroke="' + w + '" stroke-width=".9"/><circle r="6.6" fill="none" stroke="#0D1B3E" stroke-width=".8" opacity=".6"/><path d="M0 -5.2 L1.5 -1.6 L5.2 -1.4 L2.4 1 L3.3 4.8 L0 2.8 L-3.3 4.8 L-2.4 1 L-5.2 -1.4 L-1.5 -1.6 Z" fill="#0D1B3E"/>';
   }
+  /* le pion : une vraie pièce de jeu, couleur du joueur, couronnée de l'objet de son sport */
   function athlete(color, ini, sport) {
-    var c = String(color || "#FFBD59"), k = sportKind(sport), ball = ballFor(k);
-    var hair = '<path d="M15.8 9 Q22 1.2 28.2 9 L28.2 7.6 Q22 -.4 15.8 7.6 Z" class="ha"/><rect x="15.9" y="7.3" width="12.2" height="2.2" rx="1" class="hb"/>';
-    var gear = "", head = "", hand = "";
-    if (k === "swim") { hair = '<path d="M15.6 9.6 Q15.6 1.4 22 1.4 Q28.4 1.4 28.4 9.6 Z" style="fill:' + c + '" stroke="#fff" stroke-width=".7"/>'; head = '<rect x="17" y="9.4" width="10" height="3" rx="1.4" fill="#16294f" stroke="#7fe3e6" stroke-width=".7"/>'; }
-    if (k === "velo") { hair = '<path d="M15.2 9.6 Q15.2 .6 22 .6 Q28.8 .6 28.8 9.6 Z" style="fill:' + c + '" stroke="#fff" stroke-width=".8"/><path d="M17 4 L27 4 M18 6.4 L26 6.4" stroke="#fff" stroke-width=".6"/>'; head = '<rect x="16.5" y="9.2" width="11" height="2.8" rx="1.2" fill="#0D1B3E" opacity=".85"/>'; }
-    if (k === "rugby") { hair = '<path d="M15.8 9.4 Q15.8 1.4 22 1.4 Q28.2 1.4 28.2 9.4 L26.6 9.4 Q22 4.6 17.4 9.4 Z" class="ha"/>'; gear = '<path d="M13.4 24 H30.6 M13.2 29.5 H30.8" stroke="#fff" stroke-width="1.6" opacity=".9"/>'; }
-    if (k === "tennis") { hand = '<g transform="translate(35.4 33.4) rotate(-32)"><path d="M0 0 V-11" stroke="#fff" stroke-width="1.4"/><ellipse cx="0" cy="-17" rx="5" ry="6.4" fill="none" stroke="#fff" stroke-width="1.3"/><path d="M-3.4 -17 H3.4 M0 -22 V-12 M-2.4 -20.6 H2.4 M-2.4 -13.4 H2.4" stroke="#7fe3e6" stroke-width=".4"/></g>'; }
-    if (k === "golf") { hand = '<g transform="translate(35.4 33.4) rotate(18)"><path d="M0 0 V27" stroke="#d9dde8" stroke-width="1.2"/><path d="M0 27 L4.4 28.6 L4 30.2 L-.4 28.6 Z" fill="#d9dde8"/></g>'; }
-    if (k === "boxe") { hand = '<circle cx="8.6" cy="33.4" r="3.6" class="gv"/><circle cx="35.4" cy="33.4" r="3.6" class="gv"/>'; }
-    if (k === "combat") { gear = '<path d="M16 19.4 L22 31 L28 19.4" stroke="#cfd6e6" stroke-width="1" fill="none"/><rect x="13.4" y="34" width="17.2" height="2.6" class="belt" style="fill:' + c + '"/><rect x="21" y="33.6" width="2.4" height="6" class="belt" style="fill:' + c + '"/>'; }
-    if (k === "run") { gear = '<rect x="17.4" y="22" width="9.2" height="6.4" rx="1" fill="#fff" opacity=".95"/><text x="22" y="27.2" text-anchor="middle" font-size="5" font-weight="700" fill="#0D1B3E">' + (/^[0-9]$/.test(ini) ? ini : "7") + '</text>'; }
-    var jersey = (k === "combat") ? "#f3f5fa" : c;
-    var sock = (k === "foot" || k === "rugby" || k === "volley") ? "sc" : "";
-    return '<svg class="ath k-' + k + '" viewBox="0 0 44 66" aria-hidden="true">' +
-      '<g class="lg l"><path d="M17 42 L15.5 56" class="sk"/><path d="M15.5 56 L15.5 60" class="so ' + sock + '" style="--tc:' + c + '"/><ellipse cx="14.6" cy="62" rx="4.4" ry="2.2" class="sh2"/></g>' +
-      '<g class="lg r"><path d="M27 42 L28.5 56" class="sk"/><path d="M28.5 56 L28.5 60" class="so ' + sock + '" style="--tc:' + c + '"/><ellipse cx="29.4" cy="62" rx="4.4" ry="2.2" class="sh2"/></g>' +
-      '<g class="bd"><path d="M13 19 Q22 14 31 19 L30 37 Q22 40 14 37 Z" style="fill:' + jersey + '" stroke="#fff" stroke-width="1"/>' +
-      '<rect x="13.5" y="36" width="17" height="8" rx="2" class="st"/><rect x="13.5" y="38.5" width="17" height="1.4" class="gd"/>' + gear +
-      (k === "run" || k === "combat" ? "" : '<text x="22" y="32" text-anchor="middle" class="nb">' + ini + '</text>') +
-      '<g class="ar l"><path d="M13.5 20 L9 32" class="sk"/><circle cx="8.6" cy="33.4" r="2" class="hd"/></g>' +
-      '<g class="ar r"><path d="M30.5 20 L35 32" class="sk"/><circle cx="35.4" cy="33.4" r="2" class="hd"/>' + hand + '</g>' +
-      '<circle cx="22" cy="10" r="6.2" class="hd"/>' + hair + head + '</g>' +
-      (ball ? '<g class="ball">' + ball + '</g>' : "") + '</svg>';
+    var c = String(color || "#FFBD59"), k = sportKind(sport);
+    var spin = (k === "foot" || k === "basket" || k === "hand" || k === "volley" || k === "tennis" || k === "golf" || k === "velo" || k === "rugby") ? " rot" : " wob";
+    return '<svg class="pw k-' + k + '" viewBox="0 0 44 64" aria-hidden="true" style="--pc:' + c + '">' +
+      '<ellipse cx="22" cy="57.6" rx="15" ry="4.6" fill="#000" opacity=".4"/>' +
+      '<ellipse cx="22" cy="55" rx="15" ry="5" style="fill:var(--pc)"/><ellipse cx="22" cy="55" rx="15" ry="5" fill="#000" opacity=".28"/>' +
+      '<ellipse cx="22" cy="52.6" rx="15" ry="5" style="fill:var(--pc)" stroke="#fff" stroke-width=".9"/><ellipse cx="19" cy="51.6" rx="8" ry="1.6" fill="#fff" opacity=".35"/>' +
+      '<path d="M13 52 C15 44 17.6 38.6 18.6 33 L25.4 33 C26.4 38.6 29 44 31 52 Z" style="fill:var(--pc)" stroke="#fff" stroke-width=".9"/>' +
+      '<path d="M16.6 50 C18 44 19.8 39.6 20.4 34.6" stroke="#fff" stroke-width="2.2" fill="none" opacity=".4" stroke-linecap="round"/>' +
+      '<path d="M26.4 36 C27.4 41 29 45.6 30 50 L31 52 C29 44 26.4 38.6 25.4 33 Z" fill="#000" opacity=".22"/>' +
+      '<text x="22" y="47.2" text-anchor="middle" class="pn">' + ini + '</text>' +
+      '<ellipse cx="22" cy="33" rx="9.4" ry="3.1" style="fill:var(--pc)" stroke="#fff" stroke-width=".9"/><ellipse cx="22" cy="31.8" rx="6.2" ry="1.2" fill="#fff" opacity=".35"/>' +
+      '<g transform="translate(22 20.4)"><g class="hd' + spin + '">' + headFor(k) + '</g></g></svg>';
   }
   var SHOWN = {}, ANIM = {};
   var off = 0;
@@ -257,7 +251,22 @@
     sc.addEventListener("pointerup", end);
     sc.addEventListener("pointercancel", end);
   }
+  /* le pilier de lumière est mesuré en 3D puis remplacé par un calque 2D : un plan vertical au centre du plateau coupait les cases alignées avec lui */
+  function flatPillar(root) {
+    var pl = root.querySelector(".pillar"), sc = root.querySelector(".scene");
+    if (!pl || !sc) { return; }
+    var r = pl.getBoundingClientRect(), s = sc.getBoundingClientRect();
+    var d = document.createElement("div");
+    d.className = "pcol";
+    d.style.left = (r.left - s.left + r.width / 2) + "px";
+    d.style.top = (r.top - s.top) + "px";
+    d.style.height = r.height + "px";
+    d.innerHTML = "<i></i>";
+    sc.insertBefore(d, sc.firstChild);
+    pl.parentNode.removeChild(pl);
+  }
   function animate(root, delay) {
+    flatPillar(root);
     var els = root.querySelectorAll(".pawn3"), k2;
     for (k2 = 0; k2 < els.length; k2++) { stepPawn(els[k2], delay === undefined ? 150 : delay); }
     bind(root);

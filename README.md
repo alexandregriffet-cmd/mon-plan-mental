@@ -65,4 +65,4 @@ Après la mise en situation, chaque joueur répond à une question ouverte du co
 La fiche de synthèse « Mes 3 actions prioritaires » est aussi présente dans la version club (vue programme et texte copié).
 
 ## Plateau
-Le fond est l image brain.webp (cerveau lumineux). Le pion est un athlète dont l équipement dépend du sport saisi (rugby, foot, basket, hand, volley, tennis, natation, vélo, judo, boxe, golf, athlétisme). En club, le sport est demandé à l entrée et partagé via game_public (voir supabase.sql).
+Le fond est l image brain.webp (cerveau lumineux). Le pion est une pièce de jeu à la couleur du joueur, couronnée de l objet de son sport (ballon ovale, ballon de foot ou de basket, balle de tennis, bonnet de bain, roue, gant de boxe, ceinture, chronomètre...). En club, le sport est demandé à l entrée et partagé via game_public (voir supabase.sql).
