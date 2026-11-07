@@ -191,7 +191,7 @@ function chips() {
 }
 var SHOWN = Board.shown;
 function pawnHtml(p) {
-  return '<div class="sh"></div><div class="pp"><span class="nm">' + esc(String(p.name).slice(0, 8)) + '</span><span class="tok" style="background:' + colorOf(p) + '">' + esc(initial(p.name)) + "</span></div>";
+  return '<div class="sh"></div><div class="pp"><span class="nm">' + esc(String(p.name).slice(0, 8)) + '</span>' + Board.athlete(colorOf(p), esc(initial(p.name))) + "</div>";
 }
 function board3d(list, meId) { return Board.html(list, meId, pawnHtml, Board.shown); }
 function boardHtml() { return board3d(plist(), ME ? ME.id : ""); }

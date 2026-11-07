@@ -127,12 +127,62 @@
     h += "</div>";
     return h + '<div class="hint">Fais glisser le plateau pour le tourner</div>';
   }
+  /* fond : cerveau en lignes lumineuses (hémisphère construit par le calcul, puis symétrique) */
+  function hemiPath(k, amp, freq, ph, a0, a1) {
+    var pts = [], n = 64, i, t, th, r, x, y;
+    for (i = 0; i <= n; i++) {
+      t = a0 + (a1 - a0) * i / n;
+      th = (t - 0.5) * Math.PI;
+      r = k * (1 + amp * Math.sin(freq * th + ph));
+      x = 98 - 80 * r * Math.cos(th) * (1 - 0.08 * Math.sin(th) * Math.sin(th));
+      y = 100 + 86 * r * Math.sin(th);
+      pts.push(x.toFixed(1) + " " + y.toFixed(1));
+    }
+    return "M" + pts.join(" L");
+  }
+  var BR_OUT = hemiPath(1, 0.035, 11, 0.6, 0.02, 0.98);
+  var BR_FIS = "M99 14 C95 40 103 62 98 88 C94 112 103 134 98 158 C96 172 99 180 99 186";
+  var BR_GYR = [
+    [hemiPath(0.8, 0.07, 13, 0.2, 0.08, 0.92), "1"],
+    [hemiPath(0.58, 0.09, 15, 1.4, 0.14, 0.86), "2"],
+    [hemiPath(0.36, 0.1, 17, 2.1, 0.22, 0.78), "3"],
+    ["M26 112 C38 106 46 114 58 106 C68 100 74 106 84 100", "4"],
+    ["M36 70 C46 62 52 72 62 64 C70 58 78 64 86 58", "5"],
+    ["M44 138 C52 132 60 140 70 134 C78 130 84 134 90 128", "6"]
+  ];
+  var BR_NODES = [[72, 56], [64, 100], [58, 130], [48, 78], [80, 140], [34, 100], [84, 80]];
+  function brainHemi(flip) {
+    var h = '<g' + (flip ? ' transform="translate(198 0) scale(-1 1)"' : "") + ">", i;
+    h += '<path class="bw" d="' + BR_OUT + '"/><path class="bl" d="' + BR_OUT + '"/>';
+    for (i = 0; i < BR_GYR.length; i++) { h += '<path class="gw" d="' + BR_GYR[i][0] + '"/><path class="gl g' + BR_GYR[i][1] + '" d="' + BR_GYR[i][0] + '"/>'; }
+    h += '<path class="fl" pathLength="100" style="animation-delay:' + (flip ? -3 : 0) + 's" d="' + BR_OUT + '"/>';
+    for (i = 0; i < BR_NODES.length; i++) { h += '<circle class="nd" style="animation-delay:' + ((i * 0.45 + (flip ? 0.2 : 0)) % 3).toFixed(2) + 's" cx="' + BR_NODES[i][0] + '" cy="' + BR_NODES[i][1] + '" r="1.8"/>'; }
+    return h + "</g>";
+  }
+  function brain() {
+    return '<svg class="brain" viewBox="0 0 200 200" aria-hidden="true">' + brainHemi(false) + brainHemi(true) +
+      '<path class="bw" d="' + BR_FIS + '"/><path class="bl" d="' + BR_FIS + '"/></svg>';
+  }
+  /* pion : un athlète qui court */
+  function athlete(color, ini) {
+    var c = String(color || "#FFBD59");
+    return '<svg class="ath" viewBox="0 0 44 66" aria-hidden="true">' +
+      '<g class="lg l"><path d="M17 42 L15.5 56" class="sk"/><path d="M15.5 56 L15.5 60" class="so"/><ellipse cx="14.6" cy="62" rx="4.4" ry="2.2" class="sh2"/></g>' +
+      '<g class="lg r"><path d="M27 42 L28.5 56" class="sk"/><path d="M28.5 56 L28.5 60" class="so"/><ellipse cx="29.4" cy="62" rx="4.4" ry="2.2" class="sh2"/></g>' +
+      '<g class="bd"><path d="M13 19 Q22 14 31 19 L30 37 Q22 40 14 37 Z" style="fill:' + c + '" stroke="#fff" stroke-width="1"/>' +
+      '<rect x="13.5" y="36" width="17" height="8" rx="2" class="st"/><rect x="13.5" y="38.5" width="17" height="1.4" class="gd"/>' +
+      '<text x="22" y="32" text-anchor="middle" class="nb">' + ini + '</text>' +
+      '<g class="ar l"><path d="M13.5 20 L9 32" class="sk"/><circle cx="8.6" cy="33.4" r="2" class="hd"/></g>' +
+      '<g class="ar r"><path d="M30.5 20 L35 32" class="sk"/><circle cx="35.4" cy="33.4" r="2" class="hd"/></g>' +
+      '<circle cx="22" cy="10" r="6.2" class="hd"/><path d="M15.8 9 Q22 1.2 28.2 9 L28.2 7.6 Q22 -.4 15.8 7.6 Z" class="ha"/><rect x="15.9" y="7.3" width="12.2" height="2.2" rx="1" class="hb"/></g>' +
+      '<circle class="ball" cx="37" cy="60" r="3.3"/></svg>';
+  }
   var SHOWN = {}, ANIM = {};
   var off = 0;
   function html(list, meId, pawnHtml, shown) {
     var mine = -1, i2, base = 0;
     for (i2 = 0; i2 < list.length; i2++) { if (list[i2].id === meId) { mine = list[i2].pos; base = rotFor(shown && shown[meId] !== undefined ? shown[meId] : mine); } }
-    var h = '<div class="scene"><div class="board3d"><div class="spin" data-base="' + base + '" style="--rot:' + (base + off) + 'deg"><div class="ground"></div>';
+    var h = '<div class="scene"><div class="board3d"><div class="spin" data-base="' + base + '" style="--rot:' + (base + off) + 'deg"><div class="ground">' + brain() + '</div>';
     h += '<div class="pillar" style="height:calc(var(--u) * ' + ZMAX + ')"></div>';
     h += ribbon() + tiles(mine) + beacon() + burst(mine);
     var cnt = {}, ix = {};
@@ -172,7 +222,8 @@
     SHOWN[id] = cur;
     function hop() {
       if (ANIM[id] !== tk) { return; }
-      if (cur >= target) { SHOWN[id] = target; return; }
+      if (cur >= target) { SHOWN[id] = target; el.className = el.className.replace(" run", ""); return; }
+      if (el.className.indexOf(" run") < 0) { el.className += " run"; }
       cur = cur + 1; SHOWN[id] = cur;
       place(el, cur);
       var pp = el.querySelector(".pp");
@@ -241,6 +292,6 @@
     TRACK: TRACK, PIVOT: PIVOT, DIE: DIE, PH: PH, KINDS: KINDS, MODPH: MODPH,
     kindOf: kindOf, modOf: modOf, phaseOf: phaseOf, clampMove: clampMove,
     xy: xy, html: html, animate: animate, shown: SHOWN, icon: icon,
-    dieHtml: dieHtml, tumble: tumble
+    dieHtml: dieHtml, tumble: tumble, athlete: athlete
   };
 })();

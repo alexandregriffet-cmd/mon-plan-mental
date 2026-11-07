@@ -270,7 +270,7 @@ function vEmo() {
   return h;
 }
 function pawn() {
-  return '<div class="sh"></div><div class="pp"><span class="nm">' + esc(String(S.name).slice(0, 8)) + '</span><span class="tok" style="background:' + COL + '">' + esc(String(S.name).charAt(0).toUpperCase() || "?") + "</span></div>";
+  return '<div class="sh"></div><div class="pp">' + Board.athlete(COL, esc(String(S.name).charAt(0).toUpperCase() || "?")) + "</div>";
 }
 function boardHtml() {
   return Board.html([{ id: "me", name: S.name, pos: S.pos }], "me", function () { return pawn(); }, Board.shown);
